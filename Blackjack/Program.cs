@@ -10,11 +10,9 @@ public class Program
     {
         Console.WriteLine("Welcome to Blackjack!\n");
 
-        ICardService cardService = new CardService();
         IGameService gameService = new GameService();
 
         var dealer = new Player(DEALER_NAME);
-
         var player = new Player();
 
         List<Player> players = new List<Player>() { dealer, player };
@@ -28,36 +26,42 @@ public class Program
         while (playGame)
         {
             gameService.DealStartingHands(players, game);
-            gameService.DisplayPlayers(players);
 
-            bool playerTurn = true;
-            Result playerResult = Result.Valid;
-
-            while (playerTurn)
+            if (player.Result != Result.Blackjack && dealer.Result != Result.Blackjack) //end game immediately if either the player or the dealer get Blackjack
             {
-                playerResult = gameService.TakeTurn(player, game);
-
-                if (playerResult != Result.Valid)
-                {
-                    playerTurn = false;
-                }
 
                 gameService.DisplayPlayers(players);
+
+                bool playerTurn = true;
+
+                while (playerTurn)
+                {
+                    player.Result = gameService.TakeTurn(player, game);
+
+                    if (player.Result != Result.InProgress)
+                    {
+                        playerTurn = false;
+                    }
+
+                    gameService.DisplayPlayers(players);
+                }
+
+                if (player.Result != Result.Bust)
+                {
+                    dealer.Result = gameService.TakeDealerTurn(dealer, game);
+                }
             }
 
-            var dealerResult = Result.Valid;
-            if (playerResult != Result.Bust)
-            {
-                dealerResult = gameService.TakeDealerTurn(dealer, game);
-            }
+            gameService.DisplayFinalHand(players);
 
-            gameService.DisplayPlayers(players);
+            gameService.ResolveGame(dealer, dealer.Result, player, player.Result);
 
-            playGame = gameService.ResolveGame(dealer, dealerResult, player, playerResult);
+            playGame = gameService.PlayAgain();
 
             if (playGame)
             {
                 gameService.ResetGame(players, game);
+                Console.Clear();
             }
         }
     }
