@@ -38,7 +38,7 @@ namespace Blackjack.biz
         public enum Result
         {
             Bust,
-            Valid,
+            InProgress,
             TwentyOne,
             Blackjack,
             Done
