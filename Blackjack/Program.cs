@@ -13,37 +13,29 @@ public class Program
         ICardService cardService = new CardService();
         IGameService gameService = new GameService();
 
-        var dealer = new Player {
-            Name = DEALER_NAME,
-            Hand = new List<Card>()
-        };
+        var dealer = new Player(DEALER_NAME);
 
-        var player = new Player
-        {
-            Name = "Player", //TODO: Let player input name
-            Hand = new List<Card>()
-        };
+        var player = new Player();
 
         List<Player> players = new List<Player>() { dealer, player };
 
-        List<Card> deck = cardService.CreateDeck();
-
-        deck = cardService.ShuffleDeck(deck);
-
-        gameService.DealStartingHands(players, deck);
-
-        gameService.DisplayPlayers(players);
+        var game = new Game();
+        game.Deck.Initalize();
+        game.Deck.Shuffle();
 
         bool playGame = true;
 
         while (playGame)
         {
+            gameService.DealStartingHands(players, game);
+            gameService.DisplayPlayers(players);
+
             bool playerTurn = true;
             Result playerResult = Result.Valid;
 
             while (playerTurn)
             {
-                playerResult = gameService.TakeTurn(player, deck);
+                playerResult = gameService.TakeTurn(player, game);
 
                 if (playerResult != Result.Valid)
                 {
@@ -53,11 +45,20 @@ public class Program
                 gameService.DisplayPlayers(players);
             }
 
-            var dealerResult = gameService.TakeDealerTurn(dealer, deck);
+            var dealerResult = Result.Valid;
+            if (playerResult != Result.Bust)
+            {
+                dealerResult = gameService.TakeDealerTurn(dealer, game);
+            }
 
             gameService.DisplayPlayers(players);
 
             playGame = gameService.ResolveGame(dealer, dealerResult, player, playerResult);
+
+            if (playGame)
+            {
+                gameService.ResetGame(players, game);
+            }
         }
     }
 }

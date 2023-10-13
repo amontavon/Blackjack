@@ -7,50 +7,66 @@ namespace Blackjack.biz.Game
 {
     public class GameService : IGameService
     {
-        public List<Player> DealStartingHands(List<Player> players, List<Card> deck) //TODO: are lists reference parameters? if I make changes to the list, do I need to return it?
+        public void DealStartingHands(List<Player> players, Game game)
         {
-            var dealer = players.Where(c => c.Name == Constants.DEALER_NAME).Single();
-            players.Remove(dealer);
+            var deck = game.Deck;
+            var cardsInPlay = game.CardsInPlay;
+
             var card = new Card();
 
-            foreach (var player in players) //deal first card to all players
+            foreach (var player in players) //deal first card to all players, including dealer
             {
-                card = deck.First();
+                if(deck.Cards.Count == 0)
+                {
+                    ResetDeck(game);
+                }
+
+                card = deck.Draw();
+                cardsInPlay.Cards.Add(card);
                 player.Hand.Add(card);
                 player.HandTotal = card.GetCardValue();
-                deck.Remove(card);
             }
 
-            //get first card for dealer
-            card = deck.First();
-            dealer.Hand.Add(card);
-            dealer.HandTotal = card.GetCardValue();
-            deck.Remove(card);
+            var dealer = players.Where(c => c.Name == DEALER_NAME).Single();
+            players.Remove(dealer);
 
-            //deal second card
-            foreach (var player in players) //deal first card to all players
+            foreach (var player in players) //deal second card to all players, minus dealer
             {
-                card = deck.First();
+                if (deck.Cards.Count == 0)
+                {
+                    ResetDeck(game);
+                }
+
+                card = deck.Draw();
+                cardsInPlay.Cards.Add(card);
                 player.Hand.Add(card);
                 player.HandTotal += card.GetCardValue();
-                deck.Remove(card);
             }
 
             //deal second card for dealer, face down
-            card = deck.First();
-            deck.Remove(card);
+            card = deck.Draw();
             card.IsHidden = true;
+            cardsInPlay.Cards.Add(card);
             dealer.Hand.Add(card);
             dealer.HiddenHandTotal = dealer.HandTotal + card.GetCardValue();
 
             players.Add(dealer);
 
-            return players;
+            return;
+        }
+
+        private void ResetDeck(Game game)
+        {
+            game.Discard.Shuffle();
+            game.Deck = game.Discard;
+            game.Discard.Cards.Clear();
         }
 
         public void DisplayPlayers(List<Player> players)
         {
-            foreach(var player in players)
+            Console.WriteLine("\n******\n"); //help with readability
+
+            foreach (var player in players)
             {
                 Console.WriteLine(player.Name + ": " + player.DisplayHand());
                 if(player.Name == Constants.DEALER_NAME)
@@ -62,29 +78,30 @@ namespace Blackjack.biz.Game
                     Console.WriteLine("You have: " + player.HandTotal);
                 }
             }
-            Console.WriteLine("\n******\n"); //help with readability
+
+            Console.WriteLine("\n******\n"); 
         }
 
-        public Result TakeDealerTurn(Player dealer, List<Card> deck)
+        public Result TakeDealerTurn(Player dealer, Game game)
         {
-            return ResolveDealerHand(dealer, deck);
+            return ResolveDealerHand(dealer, game);
         }
 
-        public Result TakeTurn(Player player, List<Card> deck)
+        public Result TakeTurn(Player player, Game game)
         {
             Console.WriteLine("It's your turn. Would you like to STAND or HIT?");
             var input = Console.ReadLine();
 
-            return TakeTurn(player, deck, input);
+            return TakeTurn(player, game, input);
         }
 
-        private Result TakeTurn(Player player, List<Card> deck, string input)
+        private Result TakeTurn(Player player, Game game, string input)
         {
             switch (input)
             {
                 case "HIT":
                     Console.WriteLine("Player chose to hit");
-                    return PlayerHit(player, deck);
+                    return PlayerHit(player, game);
                 case "STAND":
                     Console.WriteLine("Player chose to stand");
                     return Result.Done;
@@ -97,17 +114,22 @@ namespace Blackjack.biz.Game
             }
         }
 
-        public Result PlayerHit(Player player, List<Card> deck)
+        public Result PlayerHit(Player player, Game game)
         {
-            var card = deck.First();
+            if(game.Deck.Cards.Count == 0)
+            {
+                ResetDeck(game);
+            }
+
+            var card = game.Deck.Draw();
+            game.CardsInPlay.Cards.Add(card);
             player.Hand.Add(card);
             player.HandTotal += card.GetCardValue();
-            deck.Remove(card);
 
-            if(player.Name == Constants.DEALER_NAME)
+            if(player.Name == DEALER_NAME)
             {
                 player.HiddenHandTotal += card.GetCardValue();
-                return ResolveDealerHand(player, deck);
+                return ResolveDealerHand(player, game);
             }
 
             return ResolvePlayerHand(player);
@@ -132,12 +154,12 @@ namespace Blackjack.biz.Game
             return Result.Bust;
         }
 
-        public Result ResolveDealerHand(Player dealer, List<Card> deck) 
+        public Result ResolveDealerHand(Player dealer, Game game) 
         {
             if (dealer.HiddenHandTotal < 17) //if less than 17, dealer will hit again
             {
-                PlayerHit(dealer, deck);
-                return ResolveDealerHand(dealer, deck);
+                PlayerHit(dealer, game);
+                return ResolveDealerHand(dealer, game);
             }
             else if(dealer.HandTotal == 21)
             {
@@ -171,14 +193,12 @@ namespace Blackjack.biz.Game
             else if(dealerResult == Result.Blackjack && playerResult == Result.Blackjack)
             {
                 Console.WriteLine("You and the dealer both got Blackjack! You tie.\n");
-
-                return PlayAgain();
             }
-            else if(dealerResult == Result.Blackjack && playerResult != Result.Blackjack)
+            else if(dealerResult == Result.Blackjack) //don't need to check both: above checked above to see if they are both blackjack
             {
                 Console.WriteLine("Oh no! The dealer got Blackjack. You lose.\n");
             }
-            else if (dealerResult != Result.Blackjack && playerResult == Result.Blackjack)
+            else if (playerResult == Result.Blackjack)
             {
                 Console.WriteLine("You got Blackjack! You win!\n");
             }
@@ -186,7 +206,7 @@ namespace Blackjack.biz.Game
             {
                 Console.WriteLine("It's a draw. No one wins.\n");
             }
-            else if(dealer.HiddenHandTotal > player.HandTotal && dealerResult != Result.Bust)
+            else if(dealer.HiddenHandTotal > player.HandTotal)
             {
                 Console.WriteLine("Dealer wins! Better luck next time.\n");
             }
@@ -224,6 +244,17 @@ namespace Blackjack.biz.Game
                     Console.WriteLine("Not a valid input.");
                     return PlayAgain();
             }
+        }
+
+        public void ResetGame(List<Player> players, Game game)
+        {
+            foreach(var player in players)
+            {
+                player.ResetPlayer();
+            }
+
+            game.Discard.Cards.AddRange(game.CardsInPlay.Cards);
+            game.CardsInPlay.Cards.Clear();
         }
 
         private void DisplayFinalHand()

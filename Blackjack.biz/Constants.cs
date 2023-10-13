@@ -8,10 +8,9 @@ namespace Blackjack.biz
 {
     public static class Constants
     {
-        public static int DECK_SIZE = 52;
         public static string DEALER_NAME = "Dealer";
 
-        public enum Suite
+        public enum Suit
         {
             Spade,
             Club,

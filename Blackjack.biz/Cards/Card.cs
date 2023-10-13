@@ -5,7 +5,7 @@ namespace Blackjack.biz.Cards
     public class Card
     {
         public CardValue Value { get; set; }
-        public Suite CardSuite { get; set; }
+        public Suit CardSuit { get; set; }
         public bool IsHidden { get; set; }
 
         public string DisplayCard()
@@ -17,23 +17,23 @@ namespace Blackjack.biz.Cards
             else
             {
                 var displayValue = GetDisplayValue(this.Value);
-                var displaySuite = GetDisplaySuite(this.CardSuite);
-                return displayValue.ToString() + displaySuite.ToString();
+                var displaySuit = GetDisplaySuit(this.CardSuit);
+                return displayValue.ToString() + displaySuit.ToString();
             }
         }
 
-        private char GetDisplaySuite(Suite s)
+        private char GetDisplaySuit(Suit s)
         {
             switch (s)
             {
-                case Suite.Spade:
-                    return 'S';
-                case Suite.Club:
-                    return 'C';
-                case Suite.Diamond:
-                    return 'D';
-                case Suite.Heart:
-                    return 'H';
+                case Suit.Spade:
+                    return '♠';
+                case Suit.Club:
+                    return '♣';
+                case Suit.Diamond:
+                    return '♦';
+                case Suit.Heart:
+                    return '♥';
                 default:
                     return '*';
             }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Blackjack.biz.Players;
 using static Blackjack.biz.Constants;
 
 namespace Blackjack.biz.Cards
@@ -13,11 +9,11 @@ namespace Blackjack.biz.Cards
         {
             List<Card> deck = new List<Card>();
 
-            foreach (int suite in Enum.GetValues(typeof(Suite)))
+            foreach (int Suit in Enum.GetValues(typeof(Suit)))
             {
                 foreach (int value in Enum.GetValues(typeof(CardValue)))
                 {
-                    deck.Add(new Card { Value = (CardValue)value, CardSuite = (Suite)suite });
+                    deck.Add(new Card { Value = (CardValue)value, CardSuit = (Suit)Suit });
                 }
             }
 
@@ -29,23 +25,26 @@ namespace Blackjack.biz.Cards
             return deck;
         }
 
-        public List<Card> ShuffleDeck(List<Card> deck)
-        {
-            var rnd = new Random(DateTime.Now.Millisecond);
-            var ShuffleDeck = new List<Card>();
-            var card = new Card();
+        
 
-            for(int i = 0; i < Constants.DECK_SIZE; i++)
+        public List<Card> DiscardCards(List<Player> players) { 
+            List<Card> discard = new List<Card>();
+
+            foreach(var player in players)
             {
-                card = deck[rnd.Next(deck.Count)];
-                deck.Remove(card);
+                foreach(var card in player.Hand)
+                {
+                    if (card.IsHidden)
+                    {
+                        card.IsHidden = false;
+                    }
 
-                ShuffleDeck.Add(card);
+                    discard.Add(card);
+                    player.Hand.Remove(card); 
+                }
             }
 
-            return ShuffleDeck;
+            return discard;
         }
-
-        public void DiscardCards() { } //method called at the end of the game, takes cards from all players hands and creates a discarded deck. when the deck runs out, discard = deck, then deck is reshuffled
     }
 }
