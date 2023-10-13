@@ -13,12 +13,5 @@ namespace Blackjack.biz.Cards
         /// </summary>
         /// <returns>List of cards (the deck)</returns>
         public List<Card> CreateDeck();
-
-        /// <summary>
-        /// Shuffles the cards in the deck
-        /// </summary>
-        /// <param name="deck"></param>
-        /// <returns>The shuffled deck</returns>
-        public List<Card> ShuffleDeck(List<Card> deck);
     }
 }
