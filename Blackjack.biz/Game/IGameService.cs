@@ -53,7 +53,7 @@ namespace Blackjack.biz.Game
         /// <returns>Result of the dealer's hand.</returns>
         public Result ResolveDealerHand(Player dealer, Game game);
         /// <summary>
-        /// Determines the result of a game.
+        /// Checks player's result against the dealer's and determines the result of the game.
         /// </summary>
         /// <param name="dealer"></param>
         /// <param name="player"></param>

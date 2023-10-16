@@ -1,6 +1,7 @@
-using Blackjack.biz.Players;
+﻿using Blackjack.biz.Players;
 using Blackjack.biz.Game;
 using static Blackjack.biz.Constants;
+using System.Numerics;
 
 namespace Blackjack;
 public class Program
@@ -10,13 +11,31 @@ public class Program
         Console.WriteLine("Welcome to Blackjack!\n");
 
         IGameService gameService = new GameService();
+        IPlayerService playerService = new PlayerService();
 
+        bool validNumberOfPlayers = false;
+        string numberOfPlayersInput = "";
+        int numberOfPlayers = 0;
+
+        while (!validNumberOfPlayers) //get the number of players
+        {
+            Console.WriteLine("Enter the number of players (minimum 1, maximum 4):");
+            numberOfPlayersInput = Console.ReadLine();
+            if(Int32.TryParse(numberOfPlayersInput, out numberOfPlayers)) {
+                if(numberOfPlayers > 0 && numberOfPlayers <= 4)
+                {
+                    validNumberOfPlayers = true;
+                }
+            }
+        }
+
+        var game = new Game(numberOfPlayers);
         var dealer = new Player(DEALER_NAME);
-        var player = new Player();
+        List<Player> players = playerService.InitalizePlayers(numberOfPlayers);
+        players.Count();
+        List<Player> playersAndDealer = new List<Player> { dealer };
+        playersAndDealer.AddRange(players);
 
-        List<Player> players = new List<Player>() { dealer, player };
-
-        var game = new Game();
         game.Deck.Initalize();
         game.Deck.Shuffle();
 
@@ -24,37 +43,42 @@ public class Program
 
         while (playGame)
         {
-            gameService.DealStartingHands(players, game);
+            gameService.DealStartingHands(playersAndDealer, game);
 
-            if (player.Result != Result.Blackjack && dealer.Result != Result.Blackjack) //end game immediately if either the player or the dealer get Blackjack
+            foreach (Player player in players)
             {
-
-                gameService.DisplayPlayers(players);
-
-                bool playerTurn = true;
-
-                while (playerTurn)
+                if (player.Result != Result.Blackjack && dealer.Result != Result.Blackjack) //end game immediately if either the player or the dealer get Blackjack
                 {
-                    player.Result = gameService.TakeTurn(player, game);
+                    gameService.DisplayPlayers(playersAndDealer);
 
-                    if (player.Result != Result.InProgress)
+                    bool playerTurn = true;
+
+                    while (playerTurn)
                     {
-                        playerTurn = false;
+                        player.Result = gameService.TakeTurn(player, game);
+
+                        if (player.Result != Result.InProgress)
+                        {
+                            playerTurn = false;
+                        }
+
+                        gameService.DisplayPlayers(playersAndDealer);
                     }
-
-                    gameService.DisplayPlayers(players);
-                }
-
-                if (player.Result != Result.Bust)
-                {
-                    Console.WriteLine("It's the dealer's turn");
-                    dealer.Result = gameService.TakeDealerTurn(dealer, game);
                 }
             }
 
-            gameService.DisplayFinalHand(players);
+            if (players.Where(p => p.Result != Result.Bust).Count() > 0) //if any player didn't bust
+            {
+                Console.WriteLine("It's the dealer's turn");
+                dealer.Result = gameService.TakeDealerTurn(dealer, game);
+            }
 
-            gameService.ResolveGame(dealer, player);
+            gameService.DisplayFinalHand(playersAndDealer);
+
+            foreach(Player player in players)
+            {
+                gameService.ResolveGame(dealer, player);
+            }
 
             playGame = gameService.PlayAgain();
 
