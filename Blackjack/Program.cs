@@ -1,5 +1,4 @@
-﻿using Blackjack.biz.Players;
-using Blackjack.biz.Cards;
+using Blackjack.biz.Players;
 using Blackjack.biz.Game;
 using static Blackjack.biz.Constants;
 
@@ -48,13 +47,14 @@ public class Program
 
                 if (player.Result != Result.Bust)
                 {
+                    Console.WriteLine("It's the dealer's turn");
                     dealer.Result = gameService.TakeDealerTurn(dealer, game);
                 }
             }
 
             gameService.DisplayFinalHand(players);
 
-            gameService.ResolveGame(dealer, dealer.Result, player, player.Result);
+            gameService.ResolveGame(dealer, player);
 
             playGame = gameService.PlayAgain();
 

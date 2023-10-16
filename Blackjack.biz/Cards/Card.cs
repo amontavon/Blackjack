@@ -16,30 +16,47 @@ namespace Blackjack.biz.Cards
             }
             else
             {
-                var displayValue = GetDisplayValue(this.Value);
-                var displaySuit = GetDisplaySuit(this.CardSuit);
+                var displayValue = GetCardDisplayValue(this.Value);
+                var displaySuit = GetSuitDisplayValue(this.CardSuit);
                 return displayValue.ToString() + displaySuit.ToString();
             }
         }
 
-        private char GetDisplaySuit(Suit s)
+        public int GetCardPointValue()
+        {
+            switch (this.Value)
+            {
+                case CardValue.Ace:
+                    return 1;
+                case CardValue.Jack:
+                    return 10;
+                case CardValue.Queen:
+                    return 10;
+                case CardValue.King:
+                    return 10;
+                default:
+                    return (int)this.Value;
+            }
+        }
+
+        private string GetSuitDisplayValue(Suit s)
         {
             switch (s)
             {
                 case Suit.Spade:
-                    return '♠';
+                    return "♠";
                 case Suit.Club:
-                    return '♣';
+                    return "♣";
                 case Suit.Diamond:
-                    return '♦';
+                    return "♦";
                 case Suit.Heart:
-                    return '♥';
+                    return "♥";
                 default:
-                    return '*';
+                    return "*";
             }
         }
 
-        private string GetDisplayValue(CardValue v)
+        private string GetCardDisplayValue(CardValue v)
         {
             switch (v)
             {
@@ -55,23 +72,6 @@ namespace Blackjack.biz.Cards
                     var value = (int)v;
                     return value.ToString();
 
-            }
-        }
-
-        public int GetCardValue()
-        {
-            switch(this.Value)
-            {
-                case CardValue.Ace:
-                    return 1;
-                case CardValue.Jack:
-                    return 10;
-                case CardValue.Queen:
-                    return 10;
-                case CardValue.King:
-                    return 10;
-                default:
-                    return (int)this.Value;
             }
         }
     }

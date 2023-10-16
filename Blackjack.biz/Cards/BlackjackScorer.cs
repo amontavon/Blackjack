@@ -37,7 +37,7 @@ namespace Blackjack.biz.Cards
                         var updatedScores = new List<int>();
                         foreach (var score in possibleScoreTotals)
                         {
-                            updatedScores.Add(score + card.GetCardValue());
+                            updatedScores.Add(score + card.GetCardPointValue());
                         }
 
                         possibleScoreTotals = updatedScores;
