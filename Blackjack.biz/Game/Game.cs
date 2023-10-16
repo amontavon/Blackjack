@@ -14,7 +14,9 @@ namespace Blackjack.biz.Game
             Deck = new Deck();
             CardsInPlay = new Deck();
             Discard = new Deck();
+            NumberOfPlayers = 1;
         }
+        public int NumberOfPlayers { get; set; }
         public Deck Deck { get; set; }
         public Deck CardsInPlay { get; set; }
         public Deck Discard { get; set; }
