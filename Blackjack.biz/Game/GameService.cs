@@ -75,7 +75,7 @@ namespace Blackjack.biz.Game
                 }
                 else
                 {
-                    Console.WriteLine("You have: " + BlackJackScorer.GetScore(player.Hand, false));
+                    Console.WriteLine(player.Name + " has: " + BlackJackScorer.GetScore(player.Hand, false));
                 }
             }
 
@@ -89,13 +89,13 @@ namespace Blackjack.biz.Game
 
         public Result TakeTurn(Player player, Game game)
         {
-            if(player.Hand.Count == 2)
+            if(player.Hand.Count == 2) //if it's the players first turn, they have the option to double down.
             {
-                Console.WriteLine("It's your turn. Would you like to STAND, HIT, or DOUBLE DOWN?");
+                Console.WriteLine(player.Name + ", it's your turn. Would you like to STAND, HIT, or DOUBLE DOWN?");
             }
             else
             {
-                Console.WriteLine("It's your turn. Would you like to STAND or HIT?");
+                Console.WriteLine(player.Name + ", it's your turn. Would you like to STAND or HIT?");
             }
             var input = Console.ReadLine();
 
@@ -177,35 +177,35 @@ namespace Blackjack.biz.Game
 
             if(player.Result == Result.Bust) //if the player busted, it doesn't matter what the dealer did
             {
-                Console.WriteLine("You busted! Game over.\n");
+                Console.WriteLine(player.Name + " busted!\n");
             }
             else if(dealer.Result == Result.Bust) //if the player didn't bust, but the dealer did, player wins
             {
-                Console.WriteLine("Dealer busted! You win!\n");
+                Console.WriteLine("Dealer busted! " + player.Name + " wins!\n");
             }
             else if(dealer.Result == Result.Blackjack && player.Result == Result.Blackjack) //if they both get blackjack, it's a tie
             {
-                Console.WriteLine("You and the dealer both got Blackjack! You tie.\n");
+                Console.WriteLine(player.Name + " and the dealer both got Blackjack! You tie.\n");
             }
             else if(dealer.Result == Result.Blackjack) //don't need to check both: above checked above to see if they are both blackjack
             {
-                Console.WriteLine("Oh no! The dealer got Blackjack. You lose.\n");
+                Console.WriteLine("Oh no! The dealer got Blackjack. " + player.Name + " loses.\n");
             }
-            else if (player.Result == Result.Blackjack)
+            else if (player.Result == Result.Blackjack) //if the player gets blackjack
             {
-                Console.WriteLine("You got Blackjack! You win!\n");
+                Console.WriteLine(player.Name + " got Blackjack!\n");
             }
-            else if(dealerScore == playerScore)
+            else if(dealerScore == playerScore) //if neither the dealer or player has blackjack and they have the same score.
             {
-                Console.WriteLine("It's a draw. No one wins.\n");
+                Console.WriteLine(player.Name + " tied the dealer.\n");
             }
-            else if(dealerScore > playerScore)
+            else if(dealerScore > playerScore) //if the dealer outscores the player but doesn't bust
             {
-                Console.WriteLine("Dealer wins! Better luck next time.\n");
+                Console.WriteLine("Dealer has a better score than " + player.Name + "! Better luck next time.\n");
             }
-            else
+            else //else, player wins
             {
-                Console.WriteLine("Congrats! You win!\n");
+                Console.WriteLine("Congrats, " + player.Name + "! You have a better score than the dealer!\n");
             }
         }
 
