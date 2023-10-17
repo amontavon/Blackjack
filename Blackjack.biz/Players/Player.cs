@@ -11,29 +11,33 @@ namespace Blackjack.biz.Players
             Name = "Player";
             Hand = new List<Card>();
             Result = Result.InProgress;
-            PlayerBet = new Bet();
+            PlayerChips = new Chips();
+            IsDealer = false;
         }
 
-        public Player(string name)
+        public Player(string name, bool isDealer)
         {
             Name = name;
             Hand = new List<Card>();
             Result = Result.InProgress;
-            PlayerBet = new Bet();
+            PlayerChips = new Chips();
+            IsDealer = isDealer;
         }
 
-        public Player(string name, Bet bet)
+        public Player(string name, Chips bet)
         {
             Name = name;
             Hand = new List<Card>();
             Result = Result.InProgress;
-            PlayerBet = bet;
+            PlayerChips = bet;
+            IsDealer = false;
         }
 
         public string Name { get; set; }
         public List<Card> Hand { get; set; }
         public Result Result { get; set; }
-        public Bet PlayerBet { get; set; }
+        public Chips PlayerChips { get; set; }
+        public bool IsDealer { get; set; }
 
         public string GetDisplayHandValue()
         {
@@ -51,6 +55,7 @@ namespace Blackjack.biz.Players
         {
             Hand.Clear();
             Result = Result.InProgress;
+            PlayerChips.BetAmount = 0;
         }
     }
 }

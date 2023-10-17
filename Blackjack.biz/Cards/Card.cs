@@ -26,8 +26,8 @@ namespace Blackjack.biz.Cards
         {
             switch (this.Value)
             {
-                case CardValue.Ace:
-                    return 1;
+                case CardValue.Ace: //handled specially in BlackjackScorer.cs
+                    return 0;
                 case CardValue.Jack:
                     return 10;
                 case CardValue.Queen:

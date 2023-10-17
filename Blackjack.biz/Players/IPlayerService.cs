@@ -14,6 +14,11 @@ namespace Blackjack.biz.Players
         /// <param name="numberOfPlayers"></param>
         /// <returns>List of players</returns>
         public List<Player> InitalizePlayers(int numberOfPlayers);
+        /// <summary>
+        /// Gets the amount of chips a player wants to bet
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
         public void GetPlayerBet(Player player);
     }
 }

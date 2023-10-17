@@ -38,8 +38,10 @@ namespace Blackjack.biz.Players
                     }
                 }
 
-                playerList.Add(new Player(name, new Bet(chipAmount)));
+                playerList.Add(new Player(name, new Chips(chipAmount)));
             }
+
+            playerList.Insert(0, new Player(DEALER_NAME, true)); //insert the dealer in the start of the list
 
             Console.Clear();
 
@@ -48,7 +50,7 @@ namespace Blackjack.biz.Players
 
         public void GetPlayerBet(Player player)
         {
-            Console.WriteLine($"{player.Name}, you have {player.PlayerBet.TotalChipAmount} chips to bet. How many chips would you want to bet?");
+            Console.WriteLine($"{player.Name}, you have {player.PlayerChips.TotalChipAmount} chips to bet. How many chips would you want to bet?");
             bool validBetAmount = false;
             var betAmount = 0;
             while (!validBetAmount) //loop until a valid value is given
@@ -56,15 +58,15 @@ namespace Blackjack.biz.Players
                 var betAmountInput = Console.ReadLine();
                 if (Int32.TryParse(betAmountInput, out betAmount)) //attempts to convert answer to int. if it's not an int, it's not a valid answer, and will keep looping.
                 {
-                    if (betAmount > 0 && betAmount <= player.PlayerBet.TotalChipAmount)
+                    if (betAmount > 0 && betAmount <= player.PlayerChips.TotalChipAmount)
                     {
                         validBetAmount = true;
                     }
                 }
             }
             
-            player.PlayerBet.BetAmount = betAmount;
-            player.PlayerBet.TotalChipAmount -= betAmount;
+            player.PlayerChips.BetAmount = betAmount;
+            player.PlayerChips.TotalChipAmount -= betAmount;
         }
     }
 }

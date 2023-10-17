@@ -1,14 +1,20 @@
-﻿using static Blackjack.biz.Constants;
+﻿using Blackjack.biz.Game;
+using static Blackjack.biz.Constants;
 
 namespace Blackjack.biz.Cards
 {
     public class Deck
     {
         public Deck() {
-            Cards = new List<Card>();
+            DrawPile = new List<Card>();
+            CardsInPlay = new List<Card>();
+            Discard = new List<Card>();
             DeckSize = 52;
         }
-        public List<Card> Cards { get; set; }
+        public List<Card> DrawPile { get; set; } //Deck of cards face down available to go into play
+
+        public List<Card> CardsInPlay { get; set; } //List of cards currently in play
+        public List<Card> Discard { get; set; } //Discarded cards
 
         public int DeckSize { get; set; }
 
@@ -18,37 +24,43 @@ namespace Blackjack.biz.Cards
             {
                 foreach (int value in Enum.GetValues(typeof(CardValue)))
                 {
-                    Cards.Add(new Card { Value = (CardValue)value, CardSuit = (Suit)Suit });
+                    DrawPile.Add(new Card { Value = (CardValue)value, CardSuit = (Suit)Suit });
                 }
             }
-
-            //foreach (var c in deck)
-            //{
-            //    Console.WriteLine(c.DisplayCard());
-            //}
         }
 
-        public void Shuffle()
+        public List<Card> Shuffle(List<Card> deck)
         {
             var rnd = new Random(DateTime.Now.Millisecond);
             var ShuffleDeck = new List<Card>();
 
             for (int i = 0; i < DeckSize; i++)
             {
-                var card = Cards[rnd.Next(Cards.Count)];
-                Cards.Remove(card);
+                var card = deck[rnd.Next(deck.Count)];
+                deck.Remove(card);
 
                 ShuffleDeck.Add(card);
             }
-
-            Cards = ShuffleDeck;
+;
+            return ShuffleDeck;
         }
 
-        public Card Draw()
+        public Card DrawCard()
         {
-            var card = Cards.First();
-            Cards.Remove(card);
+            if(DrawPile.Count == 0) //if there are no cards left, reshuffle the discard pile
+            {
+                ResetDeck();
+            }
+
+            var card = DrawPile.First();
+            DrawPile.Remove(card);
             return card;
+        }
+
+        private void ResetDeck()
+        {
+            DrawPile = Shuffle(Discard);
+            Discard.Clear();
         }
     }
 }

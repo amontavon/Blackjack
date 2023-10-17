@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace Blackjack.biz.Bets
 {
-    public class Bet
+    // Class that handles the amount of chips a player has, as well as their bet
+    public class Chips
     {
-        public Bet()
+        public Chips()
         {
             BetAmount = 0;
             TotalChipAmount = 0;
         }
 
-        public Bet(int totalChipAmount)
+        public Chips(int totalChipAmount)
         {
             BetAmount = 0;
             TotalChipAmount = totalChipAmount;

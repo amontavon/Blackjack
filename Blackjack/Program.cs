@@ -1,7 +1,6 @@
 ﻿using Blackjack.biz.Players;
 using Blackjack.biz.Game;
 using static Blackjack.biz.Constants;
-using System.Numerics;
 
 namespace Blackjack;
 public class Program
@@ -13,15 +12,13 @@ public class Program
         IGameService gameService = new GameService();
         IPlayerService playerService = new PlayerService();
 
-        var game = gameService.InitializeGame();
+        var game = gameService.InitializeGame(); //create game
 
-        var dealer = new Player(DEALER_NAME);
-        List<Player> players = playerService.InitalizePlayers(game.NumberOfPlayers);
-        List<Player> playersAndDealer = new List<Player> { dealer };
-        playersAndDealer.AddRange(players);
+        List<Player> players = playerService.InitalizePlayers(game.NumberOfPlayers); //get the number of players and create them
+        var dealer = players.Where(p => p.IsDealer).Single();
 
-        game.Deck.Initalize();
-        game.Deck.Shuffle();
+        game.Deck.Initalize(); //create the starting deck
+        game.Deck.DrawPile = game.Deck.Shuffle(game.Deck.DrawPile); //shuffle the cards in the draw pile
 
         bool playGame = true;
 
@@ -29,47 +26,60 @@ public class Program
         {
             foreach(Player player in players) //get bets from every player
             {
-                playerService.GetPlayerBet(player);
+                if (!player.IsDealer) //do not get a bet from the dealer
+                {
+                    playerService.GetPlayerBet(player);
+                }
             }
 
             Console.Clear();
 
-            gameService.DealStartingHands(playersAndDealer, game);
+            gameService.DealStartingHands(players, game);
 
             foreach (Player player in players)
             {
-                if (player.Result != Result.Blackjack && dealer.Result != Result.Blackjack) //end game immediately if either the player or the dealer get Blackjack
+                if (!player.IsDealer) //if the player isn't the dealer, then take turn
                 {
-                    gameService.DisplayPlayers(playersAndDealer);
-
-                    bool playerTurn = true;
-
-                    while (playerTurn)
+                    if (player.Result != Result.Blackjack && dealer.Result != Result.Blackjack) //only take player turn if the dealer doesn't have a blackjack, and if they don't have a blackjack
                     {
-                        player.Result = gameService.TakeTurn(player, game);
+                        gameService.DisplayPlayers(players);
 
-                        if (player.Result != Result.InProgress)
+                        bool playerTurn = true;
+
+                        while (playerTurn)
                         {
-                            playerTurn = false;
-                        }
+                            player.Result = gameService.TakeTurn(player, game);
 
-                        gameService.DisplayPlayers(playersAndDealer);
+                            if (player.Result != Result.InProgress)
+                            {
+                                playerTurn = false;
+                            }
+
+                            gameService.DisplayPlayers(players);
+                        }
                     }
                 }
             }
 
-            if (players.Where(p => p.Result != Result.Bust).Count() > 0 && dealer.Result != Result.Blackjack
-                && players.Where(p => p.Result != Result.Blackjack).Count() < game.NumberOfPlayers) //if any player didn't bust, the dealer didn't get Blackjack, or all players didn't get Blackjack
+            // below bool determines whether or not the dealer needs to take their turn
+            // if every player either busted or got a blackjack, the dealer doesn't need to take their turn
+            // if the dealer already has blackjack, they don't need to take their turn
+            // else, they need to take their turn
+            var doesDealerTakeTurn = players.Where(p => p.Result != Result.Bust && p.Result != Result.Blackjack).Count() > 0 && dealer.Result != Result.Blackjack;
+            if (doesDealerTakeTurn)
             {
                 Console.WriteLine("It's the dealer's turn");
                 dealer.Result = gameService.TakeDealerTurn(dealer, game);
             }
 
-            gameService.DisplayFinalHand(playersAndDealer);
+            gameService.DisplayFinalHand(players);
 
             foreach(Player player in players)
             {
-                gameService.ResolveGame(dealer, player);
+                if (!player.IsDealer) //do not resolve the dealer's hand against themselves
+                {
+                    gameService.ResolveGame(dealer, player);
+                }
             }
 
             var canContinue = gameService.DisplayFinalChipAmounts(players);
