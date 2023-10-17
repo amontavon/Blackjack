@@ -13,26 +13,10 @@ public class Program
         IGameService gameService = new GameService();
         IPlayerService playerService = new PlayerService();
 
-        bool validNumberOfPlayers = false;
-        string numberOfPlayersInput = "";
-        int numberOfPlayers = 0;
+        var game = gameService.InitializeGame();
 
-        while (!validNumberOfPlayers) //get the number of players
-        {
-            Console.WriteLine("Enter the number of players (minimum 1, maximum 4):");
-            numberOfPlayersInput = Console.ReadLine();
-            if(Int32.TryParse(numberOfPlayersInput, out numberOfPlayers)) {
-                if(numberOfPlayers > 0 && numberOfPlayers <= 4)
-                {
-                    validNumberOfPlayers = true;
-                }
-            }
-        }
-
-        var game = new Game(numberOfPlayers);
         var dealer = new Player(DEALER_NAME);
-        List<Player> players = playerService.InitalizePlayers(numberOfPlayers);
-        players.Count();
+        List<Player> players = playerService.InitalizePlayers(game.NumberOfPlayers);
         List<Player> playersAndDealer = new List<Player> { dealer };
         playersAndDealer.AddRange(players);
 
@@ -43,6 +27,13 @@ public class Program
 
         while (playGame)
         {
+            foreach(Player player in players) //get bets from every player
+            {
+                playerService.GetPlayerBet(player);
+            }
+
+            Console.Clear();
+
             gameService.DealStartingHands(playersAndDealer, game);
 
             foreach (Player player in players)
@@ -67,7 +58,8 @@ public class Program
                 }
             }
 
-            if (players.Where(p => p.Result != Result.Bust).Count() > 0) //if any player didn't bust
+            if (players.Where(p => p.Result != Result.Bust).Count() > 0 && dealer.Result != Result.Blackjack
+                && players.Where(p => p.Result != Result.Blackjack).Count() < game.NumberOfPlayers) //if any player didn't bust, the dealer didn't get Blackjack, or all players didn't get Blackjack
             {
                 Console.WriteLine("It's the dealer's turn");
                 dealer.Result = gameService.TakeDealerTurn(dealer, game);
@@ -80,7 +72,9 @@ public class Program
                 gameService.ResolveGame(dealer, player);
             }
 
-            playGame = gameService.PlayAgain();
+            var canContinue = gameService.DisplayFinalChipAmounts(players);
+
+            playGame = canContinue ? gameService.PlayAgain() : false; //if you can continue, do you want to play again?
 
             if (playGame)
             {

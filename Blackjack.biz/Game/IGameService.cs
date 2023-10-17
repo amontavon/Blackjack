@@ -7,6 +7,11 @@ namespace Blackjack.biz.Game
     public interface IGameService
     {
         /// <summary>
+        /// Gets the number of players and creates a game.
+        /// </summary>
+        /// <returns>New Game</returns>
+        public Game InitializeGame();
+        /// <summary>
         /// Method that deals the starting hands to each player and the dealer. The dealer's second card is dealt face down.
         /// </summary>
         /// <param name="players"></param>
@@ -25,6 +30,12 @@ namespace Blackjack.biz.Game
         /// <param name="players"></param>
         /// <returms></returms>
         public void DisplayFinalHand(List<Player> players);
+        /// <summary>
+        /// Displays the amount of chips each player has left at the end of the game. If a player has none, they are removed for the game. If all players have none, the game ends.
+        /// </summary>
+        /// <param name="players"></param>
+        /// <returns>Boolean that determines whether or not the game can continue.</returns>
+        public bool DisplayFinalChipAmounts(List<Player> players);
         /// <summary>
         /// Determines what the player does on their turn.
         /// </summary>

@@ -14,5 +14,6 @@ namespace Blackjack.biz.Players
         /// <param name="numberOfPlayers"></param>
         /// <returns>List of players</returns>
         public List<Player> InitalizePlayers(int numberOfPlayers);
+        public void GetPlayerBet(Player player);
     }
 }
