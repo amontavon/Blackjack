@@ -1,4 +1,5 @@
-﻿using Blackjack.biz.Cards;
+﻿using Blackjack.biz.Bets;
+using Blackjack.biz.Cards;
 using static Blackjack.biz.Constants;
 
 namespace Blackjack.biz.Players
@@ -10,33 +11,33 @@ namespace Blackjack.biz.Players
             Name = "Player";
             Hand = new List<Card>();
             Result = Result.InProgress;
-            Bet = 0;
-            ChipAmount = 0;
+            PlayerChips = new Chips();
+            IsDealer = false;
         }
 
-        public Player(string name)
+        public Player(string name, bool isDealer)
         {
             Name = name;
             Hand = new List<Card>();
             Result = Result.InProgress;
-            Bet = 0;
-            ChipAmount = 0;
+            PlayerChips = new Chips();
+            IsDealer = isDealer;
         }
 
-        public Player(string name, int chipAmount)
+        public Player(string name, Chips bet)
         {
             Name = name;
             Hand = new List<Card>();
             Result = Result.InProgress;
-            Bet = 0;
-            ChipAmount = chipAmount;
+            PlayerChips = bet;
+            IsDealer = false;
         }
 
         public string Name { get; set; }
         public List<Card> Hand { get; set; }
         public Result Result { get; set; }
-        public int Bet { get; set; }
-        public int ChipAmount { get; set; }
+        public Chips PlayerChips { get; set; }
+        public bool IsDealer { get; set; }
 
         public string GetDisplayHandValue()
         {
@@ -54,6 +55,7 @@ namespace Blackjack.biz.Players
         {
             Hand.Clear();
             Result = Result.InProgress;
+            PlayerChips.BetAmount = 0;
         }
     }
 }

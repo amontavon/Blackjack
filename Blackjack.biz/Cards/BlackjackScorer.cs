@@ -19,10 +19,10 @@ namespace Blackjack.biz.Cards
                     if (card.Value == CardValue.Ace)
                     {
                         var updatedScores = new List<int>();
-                        //Loop through each value and deplicate it. Working backwards to not run into duplicates added
+                        //Loop through each value and deplicate it.
                         while (possibleScoreTotals.Count > 0)
                         {
-                            var score = possibleScoreTotals.Last();
+                            var score = possibleScoreTotals.First();
                             possibleScoreTotals.Remove(score);
 
                             //Add both possible new scores

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blackjack", "Blackjack\Blackjack.csproj", "{0C0D73BA-F714-4FFB-AE36-6785F43081F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blackjack.Console", "Blackjack\Blackjack.Console.csproj", "{0C0D73BA-F714-4FFB-AE36-6785F43081F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blackjack.biz", "Blackjack.biz\Blackjack.biz.csproj", "{EB06B581-BA95-402C-AE19-B301C106C44B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blackjack.biz", "Blackjack.biz\Blackjack.biz.csproj", "{EB06B581-BA95-402C-AE19-B301C106C44B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
