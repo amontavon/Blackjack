@@ -4,7 +4,7 @@ Welcome to Blackjack!
 
 The rules for this game were adapted from https://bicyclecards.com/how-to-play/blackjack/
 
-This game is a C# Windows Console Application. To play, clone the repo and run the application.
+This game is a C# Windows Console Application. To play, clone the repo and run the Blackjack.Console project.
 
 At start, the game will ask for the number of players. Enter a number 1-4 to continue.
 
